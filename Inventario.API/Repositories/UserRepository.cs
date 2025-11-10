@@ -3,7 +3,7 @@ using Inventario.API.Interfaces;
 using Inventario.API.Models;
 using LiteDB;
 
-namespace Inventario.API.Services;
+namespace Inventario.API.Repositories;
 
 public class UserRepository : IUserRepository
 {

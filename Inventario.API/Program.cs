@@ -1,7 +1,7 @@
 using System.Text;
 using Inventario.API.Interfaces;
 using Inventario.API.Models;
-using Inventario.API.Services;
+using Inventario.API.Repositories;
 using LiteDB;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
