@@ -5,7 +5,7 @@ using LiteDB;
 
 namespace Inventario.API.Services;
 
-public class UserRepository : IRepository<User, UserDto>
+public class UserRepository : IUserRepository
 {
     private readonly LiteDatabase _db;
     private readonly ILogger<UserRepository> _logger;
@@ -27,17 +27,44 @@ public class UserRepository : IRepository<User, UserDto>
     public IEnumerable<UserDto> GetAll()
     {
         _logger.LogInformation("Retrieving all users.");
-        return Collection.FindAll().Select(static user => new UserDto
+        return Collection.FindAll().Select(static user =>
         {
-            Id = user.Id,
-            Username = user.Username,
-            Email = user.Email ?? string.Empty,
+            return new UserDto(
+                user.Id,
+                user.Username,
+                user.Email ?? string.Empty
+            );
         }).ToList();
     }
 
-    public User GetById(string id)
+    public UserDto? GetById(string id)
     {
-        return Collection.FindById(id);
+        _logger.LogDebug("Getting user by ID: {Id}", id);
+
+        var user = Collection.FindById(id);
+        if (user == null)
+            return null;
+
+        return new UserDto(
+            user.Id,
+            user.Username,
+            user.Email ?? string.Empty
+            );
+    }
+
+    public UserDto? GetByUsername(string username)
+    {
+        _logger.LogDebug("Getting user by Username: {Username}", username);
+
+        var user = Collection.FindOne(u => u.Username == username);
+        if (user == null)
+            return null;
+
+        return new UserDto(
+            user.Id,
+            user.Username,
+            user.Email ?? string.Empty
+            );
     }
 
     public void Add(User item)
@@ -46,15 +73,15 @@ public class UserRepository : IRepository<User, UserDto>
         Collection.Insert(item);
     }
 
-    public void Update(User item)
+    public bool Update(User item)
     {
         ArgumentNullException.ThrowIfNull(item);
-        Collection.Update(item);
+        return Collection.Update(item);
     }
 
-    public void Delete(string id)
+    public bool Delete(string id)
     {
         ArgumentNullException.ThrowIfNull(id);
-        Collection.Delete(id);
+        return Collection.Delete(id);
     }
 }

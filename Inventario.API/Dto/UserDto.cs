@@ -1,8 +1,6 @@
 namespace Inventario.API.Dto;
 
-public class UserDto
-{
-    public required string Id { get; set; }
-    public required string Username { get; set; }
-    public required string Email { get; set; }
-}
+public record UserDto(
+    string Id,
+    string Username,
+    string Email);

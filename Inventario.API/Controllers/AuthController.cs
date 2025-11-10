@@ -10,12 +10,12 @@ public class AuthController : ControllerBase
 {
     private readonly ILogger<AuthController> _logger;
     private readonly IConfiguration _configuration;
-    private readonly IRepository<User> _userRepository;
+    private readonly IUserRepository _userRepository;
 
     public AuthController(
         ILogger<AuthController> logger,
         IConfiguration configuration,
-        IRepository<User> userRepository)
+        IUserRepository userRepository)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
@@ -29,6 +29,8 @@ public class AuthController : ControllerBase
     {
         _logger.LogInformation("Login");
         var users = _userRepository.GetAll();
+
+        _logger.LogInformation("Users retrieved: {Count}", users.Count());
 
         return Ok(users);
     }

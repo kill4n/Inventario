@@ -1,6 +1,11 @@
+@HostAddress = http://localhost:5274
 
+POST {{HostAddress}}/api/auth/login
+Accept: application/json    
+Content-Type: application/json
 
-GET {{HostAddress}}/api/auth/login
-Accept: application/json
-
+{
+    "username": "testuser",
+    "password": "Test@123"
+}
 ###

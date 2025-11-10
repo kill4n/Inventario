@@ -11,7 +11,7 @@ public class DatabaseContext : IDatabaseContext<LiteDatabase>, IDisposable
     private bool _disposed = false;
 
     public DatabaseContext(
-        IConfiguration configuration, 
+        IConfiguration configuration,
         ILogger<DatabaseContext> logger)
     {
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
@@ -27,7 +27,7 @@ public class DatabaseContext : IDatabaseContext<LiteDatabase>, IDisposable
 
     public void Dispose()
     {
-        if(!_disposed)
+        if (!_disposed)
         {
             _db?.Dispose();
             _disposed = true;
