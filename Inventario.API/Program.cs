@@ -13,7 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Register LiteDatabase as Singleton
-builder.Services.AddScoped<IDatabaseContext<LiteDatabase>, DatabaseContext>();
+builder.Services.AddSingleton<IDatabaseContext<LiteDatabase>, DatabaseContext>();
 
 builder.Services.AddScoped<IRepository<User>, UserRepository>();
 

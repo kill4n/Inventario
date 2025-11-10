@@ -1,47 +1,60 @@
+using Inventario.API.Dto;
 using Inventario.API.Interfaces;
 using Inventario.API.Models;
 using LiteDB;
 
 namespace Inventario.API.Services;
 
-public class UserRepository:IRepository<User>
+public class UserRepository : IRepository<User, UserDto>
 {
-    private readonly IDatabaseContext<LiteDatabase> _context;
     private readonly LiteDatabase _db;
-    
-    public UserRepository(IDatabaseContext<LiteDatabase> context)
+    private readonly ILogger<UserRepository> _logger;
+    private ILiteCollection<User> Collection => _db.GetCollection<User>(_collectionName);
+    private readonly string _collectionName = "users";
+
+    public UserRepository(
+        IDatabaseContext<LiteDatabase> context,
+        ILogger<UserRepository> logger)
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-        _db = _context.GetDatabase();
+        ArgumentNullException.ThrowIfNull(context);
+        _db = context.GetDatabase();
+        _logger = logger;
+        Collection.EnsureIndex(x => x.Username, true);
+
+        _logger.LogInformation("UserRepository initialized.");
     }
 
-    public IEnumerable<User> GetAll()
+    public IEnumerable<UserDto> GetAll()
     {
-        var collection = _db.GetCollection<User>("users");
-        return collection.FindAll().ToList();
+        _logger.LogInformation("Retrieving all users.");
+        return Collection.FindAll().Select(static user => new UserDto
+        {
+            Id = user.Id,
+            Username = user.Username,
+            Email = user.Email ?? string.Empty,
+        }).ToList();
     }
 
-    public User GetById(int id)
+    public User GetById(string id)
     {
-        var collection = _db.GetCollection<User>("users");
-        return collection.FindById(id);
+        return Collection.FindById(id);
     }
 
     public void Add(User item)
     {
-        var collection = _db.GetCollection<User>("users");
-        collection.Insert(item);
+        ArgumentNullException.ThrowIfNull(item);
+        Collection.Insert(item);
     }
 
     public void Update(User item)
     {
-        var collection = _db.GetCollection<User>("users");
-        collection.Update(item);
+        ArgumentNullException.ThrowIfNull(item);
+        Collection.Update(item);
     }
 
-    public void Delete(User item)
+    public void Delete(string id)
     {
-        var collection = _db.GetCollection<User>("users");
-        collection.Delete(item.Id);
+        ArgumentNullException.ThrowIfNull(id);
+        Collection.Delete(id);
     }
 }

@@ -2,11 +2,11 @@ namespace Inventario.API.Interfaces;
 
 using System.Collections.Generic;
 
-public interface IRepository<T>
+public interface IRepository<T,V>
 {
-    IEnumerable<T> GetAll();
-    T GetById(int id);
+    IEnumerable<V> GetAll();
+    T GetById(string id);
     void Add(T item);
     void Update(T item);
-    void Delete(T item);
+    void Delete(string id);
 }
