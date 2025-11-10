@@ -1,6 +1,6 @@
 
 
-GET {{HostAddress}}/weatherforecast/
+GET {{HostAddress}}/api/auth/login
 Accept: application/json
 
 ###
