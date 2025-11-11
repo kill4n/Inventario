@@ -39,12 +39,12 @@ public class AuthService : IAuthService
             return null;
         }
 
-        var token = GenerateJwtToken(user);
+        var token = await GenerateJwtToken(user);
         _logger.LogInformation("User {Username} logged in successfully.", request.Username);
-        return new AuthResponse(token, user.Username, user.Email ?? string.Empty);
+        return new AuthResponse(token, user.Id?.ToString() ?? string.Empty);
     }
 
-    public string GenerateJwtToken(User user)
+    public async Task<string> GenerateJwtToken(User user)
     {
         _logger.LogInformation("Generating JWT token for user: {Username}", user.Username);
         var jwtKey = _configuration["Jwt:Key"];
@@ -72,7 +72,7 @@ public class AuthService : IAuthService
 
         _logger.LogInformation("JWT token generated for user: {Username}", user.Username);
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        return await Task.FromResult(new JwtSecurityTokenHandler().WriteToken(token));
 
     }
 }

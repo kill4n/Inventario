@@ -30,7 +30,7 @@ public class UserRepository : IUserRepository
         return Collection.FindAll().Select(static user =>
         {
             return new UserDto(
-                user.Id,
+                user.Id?.ToString() ?? string.Empty,
                 user.Username,
                 user.Email ?? string.Empty
             );
@@ -46,7 +46,7 @@ public class UserRepository : IUserRepository
             return null;
 
         return new UserDto(
-            user.Id,
+            user.Id?.ToString() ?? string.Empty,
             user.Username,
             user.Email ?? string.Empty
             );
@@ -61,7 +61,7 @@ public class UserRepository : IUserRepository
             return null;
 
         return new UserDto(
-            user.Id,
+            user.Id?.ToString() ?? string.Empty,
             user.Username,
             user.Email ?? string.Empty
             );

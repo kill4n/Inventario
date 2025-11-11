@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Inventario.API.Interfaces;
+using Inventario.API.Models;
 using Inventario.API.Requests;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,13 +12,16 @@ public class AuthController : ControllerBase
 {
     private readonly ILogger<AuthController> _logger;
     private readonly IAuthService _authService;
+    private readonly IUserRepository _userRepository;
 
     public AuthController(
         ILogger<AuthController> logger,
-        IAuthService authService)
+        IAuthService authService,
+        IUserRepository userRepository)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
+        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
     }
 
     [HttpPost]
