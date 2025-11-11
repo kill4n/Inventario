@@ -67,6 +67,12 @@ public class UserRepository : IUserRepository
             );
     }
 
+    public User? GetUserByUsernameInternal(string username)
+    {
+        _logger.LogDebug("Getting user entity by Username for authentication: {Username}", username);
+        return Collection.FindOne(u => u.Username == username);
+    }
+
     public void Add(User item)
     {
         ArgumentNullException.ThrowIfNull(item);
