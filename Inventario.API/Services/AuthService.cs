@@ -14,14 +14,20 @@ public class AuthService : IAuthService
     private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
     private readonly ILogger<AuthService> _logger;
+    private readonly IPasswordHashingService _passwordHashingService;
 
-    public AuthService(IUserRepository userRepository, IConfiguration configuration, ILogger<AuthService> logger)
+    public AuthService(
+        IUserRepository userRepository,
+        IConfiguration configuration,
+        ILogger<AuthService> logger,
+        IPasswordHashingService passwordHashingService)
     {
         _userRepository = userRepository;
         _configuration = configuration;
         _logger = logger;
+        _passwordHashingService = passwordHashingService;
     }
-    
+
     public async Task<AuthResponse?> LoginAsync(LoginRequest request)
     {
         _logger.LogInformation("Attempting to log in user: {Username}", request.Username);
@@ -32,7 +38,7 @@ public class AuthService : IAuthService
             return null;
         }
 
-        var passwordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.Password);
+        var passwordValid = _passwordHashingService.VerifyPassword(request.Password, user.Password);
         if (!passwordValid)
         {
             _logger.LogWarning("Invalid password for user: {Username}", request.Username);
@@ -59,7 +65,9 @@ public class AuthService : IAuthService
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Username),
             new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim("userId", user.Id?.ToString() ?? string.Empty),
+            new Claim(ClaimTypes.Role, user.Role.ToString())
         };
         _logger.LogDebug("JWT Claims: {@Claims}", claims);
 
