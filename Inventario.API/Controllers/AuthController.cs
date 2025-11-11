@@ -28,11 +28,6 @@ public class AuthController : ControllerBase
     [Route("register")]
     public IActionResult Register([FromBody] RegisterRequest request)
     {
-        if (request == null)
-        {
-            _logger.LogWarning("Register request is null.");
-            return BadRequest("Invalid register request.");
-        }
         var existingUser = _userRepository.GetUserByUsernameInternal(request.Username);
         if (existingUser != null)
         {
@@ -54,12 +49,6 @@ public class AuthController : ControllerBase
     [Route("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        if (request == null)
-        {
-            _logger.LogWarning("Login request is null.");
-            return BadRequest("Invalid login request.");
-        }
-
         var response = await _authService.LoginAsync(request);
 
         if (response == null)

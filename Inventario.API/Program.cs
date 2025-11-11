@@ -1,4 +1,6 @@
 using System.Text;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Inventario.API.Interfaces;
 using Inventario.API.Models;
 using Inventario.API.Repositories;
@@ -11,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -19,6 +21,9 @@ builder.Services.AddSingleton<IDatabaseContext<LiteDatabase>, DatabaseContext>()
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPasswordHashingService, BCryptPasswordHashingService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 // Validar configuraciones requeridas
 var jwtKey = builder.Configuration["Jwt:Key"];
