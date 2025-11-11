@@ -8,13 +8,11 @@
 }
 
 .main-content {
-    padding: 3rem 0;
+    padding: 3rem 2rem;
 }
 
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
+    width: 100%;
 }
 
 .container h2 {
@@ -31,11 +29,7 @@
 
 @media (max-width: 768px) {
     .main-content {
-        padding: 2rem 0;
-    }
-
-    .container {
-        padding: 0 1rem;
+        padding: 2rem 1rem;
     }
 
     .container h2 {
