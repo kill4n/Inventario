@@ -2,6 +2,7 @@ using System.Text;
 using Inventario.API.Interfaces;
 using Inventario.API.Models;
 using Inventario.API.Repositories;
+using Inventario.API.Services;
 using LiteDB;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
@@ -16,6 +17,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IDatabaseContext<LiteDatabase>, DatabaseContext>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IPasswordHashingService, BCryptPasswordHashingService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Validar configuraciones requeridas
 var jwtKey = builder.Configuration["Jwt:Key"];

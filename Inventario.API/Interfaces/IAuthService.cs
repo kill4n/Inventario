@@ -6,6 +6,6 @@ namespace Inventario.API.Interfaces;
 
 public interface IAuthService
 {
-    Task<AuthResponse> LoginAsync(LoginRequest request);
-    string GenerateToken(User user);
+    Task<AuthResponse?> LoginAsync(LoginRequest request);
+    string GenerateJwtToken(User user);
 }

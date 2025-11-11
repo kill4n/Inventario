@@ -1,5 +1,5 @@
+using System.Threading.Tasks;
 using Inventario.API.Interfaces;
-using Inventario.API.Models;
 using Inventario.API.Requests;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,23 +10,19 @@ namespace Inventario.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly ILogger<AuthController> _logger;
-    private readonly IConfiguration _configuration;
-    private readonly IUserRepository _userRepository;
+    private readonly IAuthService _authService;
 
     public AuthController(
         ILogger<AuthController> logger,
-        IConfiguration configuration,
-        IUserRepository userRepository)
+        IAuthService authService)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-
+        _authService = authService ?? throw new ArgumentNullException(nameof(authService));
     }
 
     [HttpPost]
     [Route("login")]
-    public IActionResult Login([FromBody] LoginRequest request)
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         if (request == null)
         {
@@ -34,29 +30,14 @@ public class AuthController : ControllerBase
             return BadRequest("Invalid login request.");
         }
 
-        var username = request.Username;
-        var password = request.Password;
-        //MD5 hash of password
-        using var md5 = System.Security.Cryptography.MD5.Create();
-        var hashedPasswordBytes = md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-        var hashedPassword = BitConverter.ToString(hashedPasswordBytes).Replace("-", "").ToLowerInvariant();
+        var response = await _authService.LoginAsync(request);
 
-        _logger.LogInformation("Attempting login for user: {Username}", username);
-        _logger.LogDebug("Hashed password: {HashedPassword}", hashedPassword);
-
-        _logger.LogInformation("Login");
-
-        var user = _userRepository.GetByUsername(username);
-        if (user == null)
+        if (response == null)
         {
-            _logger.LogWarning("User not found: {Username}", username);
+            _logger.LogWarning("Invalid username or password for user: {Username}", request.Username);
             return Unauthorized("Invalid username or password.");
         }
-        _logger.LogInformation("User found: {Username}", username);
-        var users = _userRepository.GetAll();
-        _logger.LogInformation("Users retrieved: {Count}", users.Count());
 
-
-        return Ok(users);
+        return Ok(response);
     }
 }
