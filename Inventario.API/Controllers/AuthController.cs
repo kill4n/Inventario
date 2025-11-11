@@ -25,6 +25,32 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost]
+    [Route("register")]
+    public IActionResult Register([FromBody] RegisterRequest request)
+    {
+        if (request == null)
+        {
+            _logger.LogWarning("Register request is null.");
+            return BadRequest("Invalid register request.");
+        }
+        var existingUser = _userRepository.GetUserByUsernameInternal(request.Username);
+        if (existingUser != null)
+        {
+            _logger.LogWarning("Username {Username} is already taken.", request.Username);
+            return Conflict("Username is already taken.");
+        }
+
+        var response = _authService.RegisterAsync(request).Result;
+        if (response == null)
+        {
+            _logger.LogError("User registration failed for username: {Username}", request.Username);
+            return StatusCode(500, "User registration failed.");
+        }
+
+        return Ok(response);
+    }
+
+    [HttpPost]
     [Route("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {

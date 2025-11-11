@@ -47,7 +47,12 @@ public class AuthService : IAuthService
 
         var token = await GenerateJwtToken(user);
         _logger.LogInformation("User {Username} logged in successfully.", request.Username);
-        return new AuthResponse(token, user.Id?.ToString() ?? string.Empty);
+        return new AuthResponse(
+            token,
+            user.Id?.ToString() ?? string.Empty,
+            user.Username,
+            user.Email ?? string.Empty,
+            user.Role);
     }
 
     public async Task<string> GenerateJwtToken(User user)
@@ -67,7 +72,7 @@ public class AuthService : IAuthService
             new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim("userId", user.Id?.ToString() ?? string.Empty),
-            new Claim(ClaimTypes.Role, user.Role.ToString())
+            new Claim(ClaimTypes.Role, user.Role)
         };
         _logger.LogDebug("JWT Claims: {@Claims}", claims);
 
@@ -81,6 +86,32 @@ public class AuthService : IAuthService
         _logger.LogInformation("JWT token generated for user: {Username}", user.Username);
 
         return await Task.FromResult(new JwtSecurityTokenHandler().WriteToken(token));
+
+    }
+
+    public Task<RegisterResponse> RegisterAsync(RegisterRequest request)
+    {
+        _logger.LogInformation("Registering new user: {Username}", request.Username);
+        var hashedPassword = _passwordHashingService.HashPassword(request.Password);
+
+        var newUser = new User
+        {
+            Username = request.Username,
+            Password = hashedPassword,
+            Email = request.Email,
+            Role = request.Role ?? "user"
+        };
+
+        _userRepository.Add(newUser);
+        _logger.LogInformation("User {Username} registered successfully.", request.Username);
+
+        var response = new RegisterResponse(
+            newUser.Id?.ToString() ?? string.Empty,
+            newUser.Username,
+            newUser.Email ?? string.Empty,
+            newUser.Role);
+
+        return Task.FromResult(response);
 
     }
 }
