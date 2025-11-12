@@ -18,6 +18,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "Admin")]
     public IActionResult GetUser(string id)
     {
         var user = _userRepository.GetById(id);
