@@ -37,11 +37,17 @@ public class UserRepository : IUserRepository
         }).ToList();
     }
 
+    public IEnumerable<User> GetAllUsersInternal()
+    {
+        _logger.LogInformation("Retrieving all user entities for internal use.");
+        return Collection.FindAll().ToList();
+    }
+
     public UserDto? GetById(string id)
     {
         _logger.LogDebug("Getting user by ID: {Id}", id);
 
-        var user = Collection.FindById(id);
+        var user = Collection.Find(u => u.Id == new ObjectId(id)).FirstOrDefault();
         if (user == null)
             return null;
 
